@@ -150,4 +150,4 @@ Now, let me go back to @ESTEBAN's original question:
 
 >"Why we do not have CustomKeywords for "Include > Scripts?"
 
-We do not have a dedicated Editor with "Manual" view for "Include > Scripts". Therefore we do not need `CustomKeywords` class for "Include > Scripts" at all. Don't worry. You can write a script under the "Include/Scripts" folder using text editor, which calls your Groovy class under the "Keywords" folder directly.
+Katalon Studio does not provide a dedicated Editor with "Manual" view for "Include > Scripts". Therefore we do not need `CustomKeywords` class for "Include > Scripts" at all. Don't worry. You can write a script under the "Include/Scripts" folder using text editor, which calls your Groovy class under the "Keywords" folder directly.
