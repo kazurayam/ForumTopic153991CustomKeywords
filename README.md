@@ -68,9 +68,10 @@ The alternative way requires you to have the basic Java/Groovy programming knowl
 
 ### Last response
 
+
 Let me tell you my guess.
 
-I think that the `CustomKeywords` class was originally designed to be used by the Test Case Editor in Manual mode. It is not meant to be used by human.
+I think that the `CustomKeywords` class was originally designed for the sake of Test Case Editor in Manual mode. It is not meant for human.
 
 Let me show you an example.
 
@@ -83,16 +84,17 @@ import com.kms.katalon.core.annotation.Keyword
 
 class Homepage {
 
-	@Keyword
-	static void clickHrefSignup() {
-		println "clickHrefSignup was invoked"
-	}
+    @Keyword
+    static void clickHrefSignup() {
+        println "clickHrefSignup was invoked"
+    }
 }
 ```
 
 I made 2 Test Case scripts:
 
 1. `Test Cases/TC1`
+
 ```
 import pages.Homepage
 
@@ -111,13 +113,13 @@ clickHrefSignup was invoked
 情報: END Test Cases/TC1
 ```
 
-2. `Test Cases/TC1`
+2. `Test Cases/TC2`
+
 ```
 CustomKeywords.'pages.Homepage.clickHrefSignup'()
 ```
 
 When I ran the TC2, it ran fine. The output was like this this:
-
 ```
 11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
 情報: --------------------
@@ -138,18 +140,14 @@ Now, let's look at the TC1 and TC2 in the "Manual" view of the Test Case Editor.
 
 2. TC2 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC2.png)
 
-Please compare these 2 screenshots. You would surely notice how the Test Case Editr in Manual view renders them differently.
-
-My analysis:
-
-The Manual view rendered TC1 and TC2 quite differently. How can it differentiate them? The key is the code format as:
+Please compare these 2 screenshots. You would surely notice how the Test Case Editor in Manual view renders them differently. How can the Editor differentiate them? The key is the code format as:
 
 `CustomKeywords."fully.qualified.class.name.methodName"(args...)`
 
-When the Editor in Manual view re-opens a test case script and when it finds `CustomKeywords.XXXX(yyy)` notation in the source, it will restores the row that calls a Custom keyword, as it did for TC1. Otherwise, it will restore the row that calls `Method Call Statement` as it did for TC2. Therfore `CustomKeywords.XXXX(yyy)` notation controls how the Editor in Manual view should work.
+When the Editor in Manual view re-opens a test case script and when it finds `CustomKeywords.XXXX(yyy)` notation in the source, it will renders the row that calls a Custom keyword, as it did for TC2. Otherwise, it will restore the row with a meaningless label `Method Call Statement` as it did for TC1. As such, the `CustomKeywords.XXXX(yyy)` notation is significant for the Editor software. It gives the Editor in Manual view a signal how it should render the source code line in the tabular form.
 
-Now, let me go back to @ESTEBAN's original question: "Why we do not have CustomKeywords for "Include > Scripts?"
+Now, let me go back to @ESTEBAN's original question:
 
-We do not have a dedicated Editor with "Manual" view for "Include > Scripts". Therefore we do not need `CustomKeywords` class for "Include > Scripts" at all. Don't worry. A script under the "Include/Scripts" folder can call your Groovy classes under the "Keywords" folder directly.
+>"Why we do not have CustomKeywords for "Include > Scripts?"
 
-
+We do not have a dedicated Editor with "Manual" view for "Include > Scripts". Therefore we do not need `CustomKeywords` class for "Include > Scripts" at all. Don't worry. You can write a script under the "Include/Scripts" folder using text editor, which calls your Groovy class under the "Keywords" folder directly.
