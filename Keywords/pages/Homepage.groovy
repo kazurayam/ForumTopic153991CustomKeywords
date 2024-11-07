@@ -5,7 +5,7 @@ import com.kms.katalon.core.annotation.Keyword
 class Homepage {
 
 	@Keyword
-	def clickHrefSignup() {
+	static void clickHrefSignup() {
 		println "clickHrefSignup was invoked"
 	}
 }

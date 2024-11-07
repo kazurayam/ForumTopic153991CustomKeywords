@@ -23,71 +23,6 @@ I would explain my view as follows.
 
 I don't know. It is by design. Ask Katalon for sure.
 
-Let me tell you my guess.
-
-I think that the `CustomKeywords` class was originally designed to be used by the Test Case Editor in Manual mode. It is not meant to be used by human.
-
-Let me show you an example.
-
-I made a custom Groovy class `Keywords/pages/Homepage.groovy`:
-
-```
-package pages
-
-import com.kms.katalon.core.annotation.Keyword
-
-class Homepage {
-
-	@Keyword
-	def clickHrefSignup() {
-		println "clickHrefSignup was invoked"
-	}
-}
-```
-
-I made 2 Test Case scripts:
-
-1. 'Test Cases/TC1'
-```
-import pages.Homepage
-
-Homepage.clickHrefSignup()
-```
-
-2. 'Test Cases/TC1'
-```
-CustomKeywords.'pages.Homepage.clickHrefSignup'()
-```
-
-When I run the TC1 and TC2, both runs fine. The output looks the same like this:
-
-```
-11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
-情報: --------------------
-11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
-情報: START Test Cases/TC2
-clickHrefSignup was invoked
-11月 07, 2024 9:03:42 午前 com.kms.katalon.core.logging.KeywordLogger log
-情報: pages.Homepage.clickHrefSignup is PASSED
-11月 07, 2024 9:03:42 午前 com.kms.katalon.core.logging.KeywordLogger endTest
-情報: END Test Cases/TC2
-```
-
-Now, let's look at the TC1 and TC2 in the "Manual" view of the Test Case Editor.
-
-1. TC1 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC1.png)
-
-2. TC2 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC2.png)
-
-Please compare these 2 screenshots and find how the Test Case Editr in Manual view renders them differently.
-
-You know, the Manual mode lets you manipulate a Test Case in a tabular format in GUI. When you finished manipulating it and saved the change, the Editor generates a source code of Groovy language. While generating a groovy source, the Editor have to translate an entry that calls a custom class in the GUI table into a line of Groovy statement. At that instant, the Editor generates a line in the format of
-
-`CustomKeywords."fully.qualified.class.name.methodName"(args...)`
-
-When the Editor in Manual mode re-opens a test case script and when it finds `CustomKeywords.XXXX(yyy)` notation, it will restore the view in tabular format with a label that indicates that the row calls a Custom keyword. As such, `CustomKeywords.XXXX(yyy)` notation plays an important role for the Editor in Manual mode; but not for human.
-
-On the other hand, we do not have a dedicated Editor with "Manual" mode for "Include > Scripts" which generates Groovy source. Therefore we do not need `CustomKeywords` class for "Include > Scripts". Don't worry. A script under the "Include/Scripts" folder can call your Groovy classes under the "Keywords" folder directly.
 
 ### Second response
 
@@ -131,5 +66,90 @@ I suppose that they cut describing the alternative way (call your custom keyword
 
 The alternative way requires you to have the basic Java/Groovy programming knowledge. What is `import` statement? What is static method and instance method? What is `new` keyword? What is `class`? What is `instance`? ... These questions are too easy for you @ESTEBAN but not for everyone. I guess, Katalon thought it is better not to mention the alternative in the doc for conciseness.
 
+### Last response
+
+Let me tell you my guess.
+
+I think that the `CustomKeywords` class was originally designed to be used by the Test Case Editor in Manual mode. It is not meant to be used by human.
+
+Let me show you an example.
+
+I made a custom Groovy class `Keywords/pages/Homepage.groovy`:
+
+```
+package pages
+
+import com.kms.katalon.core.annotation.Keyword
+
+class Homepage {
+
+	@Keyword
+	static void clickHrefSignup() {
+		println "clickHrefSignup was invoked"
+	}
+}
+```
+
+I made 2 Test Case scripts:
+
+1. `Test Cases/TC1`
+```
+import pages.Homepage
+
+Homepage.clickHrefSignup()
+```
+
+When I ran the TC1, it ran fine. The output was like this this:
+
+```
+11月 07, 2024 9:22:58 午前 com.kms.katalon.core.logging.KeywordLogger startTest
+情報: --------------------
+11月 07, 2024 9:22:58 午前 com.kms.katalon.core.logging.KeywordLogger startTest
+情報: START Test Cases/TC1
+clickHrefSignup was invoked
+11月 07, 2024 9:22:59 午前 com.kms.katalon.core.logging.KeywordLogger endTest
+情報: END Test Cases/TC1
+```
+
+2. `Test Cases/TC1`
+```
+CustomKeywords.'pages.Homepage.clickHrefSignup'()
+```
+
+When I ran the TC2, it ran fine. The output was like this this:
+
+```
+11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
+情報: --------------------
+11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
+情報: START Test Cases/TC2
+clickHrefSignup was invoked
+11月 07, 2024 9:03:42 午前 com.kms.katalon.core.logging.KeywordLogger log
+情報: pages.Homepage.clickHrefSignup is PASSED
+11月 07, 2024 9:03:42 午前 com.kms.katalon.core.logging.KeywordLogger endTest
+情報: END Test Cases/TC2
+```
+
+As you see, both of TC1 and TC2 ran fine. The outputs are identical.
+
+Now, let's look at the TC1 and TC2 in the "Manual" view of the Test Case Editor.
+
+1. TC1 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC1.png)
+
+2. TC2 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC2.png)
+
+Please compare these 2 screenshots. You would surely notice how the Test Case Editr in Manual view renders them differently.
+
+My analysis:
+
+The Manual view rendered TC1 and TC2 quite differently. How can it differentiate them? The key is the code format as:
+
+`CustomKeywords."fully.qualified.class.name.methodName"(args...)`
+
+When the Editor in Manual view re-opens a test case script and when it finds `CustomKeywords.XXXX(yyy)` notation in the source, it will restores the row that calls a Custom keyword, as it did for TC1. Otherwise, it will restore the row that calls `Method Call Statement` as it did for TC2. Therfore `CustomKeywords.XXXX(yyy)` notation controls how the Editor in Manual view should work.
+
+Now, let me go back to @ESTEBAN's original question: "Why we do not have CustomKeywords for "Include > Scripts?"
+
+We do not have a dedicated Editor with "Manual" view for "Include > Scripts". Therefore we do not need `CustomKeywords` class for "Include > Scripts" at all. Don't worry. A script under the "Include/Scripts" folder can call your Groovy classes under the "Keywords" folder directly.
 
 
