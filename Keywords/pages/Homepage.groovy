@@ -1,8 +1,11 @@
 package pages
 
-public class Homepage {
+import com.kms.katalon.core.annotation.Keyword
 
-	public static void clickHrefSignup() {
+class Homepage {
+
+	@Keyword
+	def clickHrefSignup() {
 		println "clickHrefSignup was invoked"
 	}
 }

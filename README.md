@@ -27,6 +27,60 @@ Let me tell you my guess.
 
 I think that the `CustomKeywords` class was originally designed to be used by the Test Case Editor in Manual mode. It is not meant to be used by human.
 
+Let me show you an example.
+
+I made a custom Groovy class `Keywords/pages/Homepage.groovy`:
+
+```
+package pages
+
+import com.kms.katalon.core.annotation.Keyword
+
+class Homepage {
+
+	@Keyword
+	def clickHrefSignup() {
+		println "clickHrefSignup was invoked"
+	}
+}
+```
+
+I made 2 Test Case scripts:
+
+1. 'Test Cases/TC1'
+```
+import pages.Homepage
+
+Homepage.clickHrefSignup()
+```
+
+2. 'Test Cases/TC1'
+```
+CustomKeywords.'pages.Homepage.clickHrefSignup'()
+```
+
+When I run the TC1 and TC2, both runs fine. The output looks the same like this:
+
+```
+11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
+情報: --------------------
+11月 07, 2024 9:03:41 午前 com.kms.katalon.core.logging.KeywordLogger startTest
+情報: START Test Cases/TC2
+clickHrefSignup was invoked
+11月 07, 2024 9:03:42 午前 com.kms.katalon.core.logging.KeywordLogger log
+情報: pages.Homepage.clickHrefSignup is PASSED
+11月 07, 2024 9:03:42 午前 com.kms.katalon.core.logging.KeywordLogger endTest
+情報: END Test Cases/TC2
+```
+
+Now, let's look at the TC1 and TC2 in the "Manual" view of the Test Case Editor.
+
+1. TC1 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC1.png)
+
+2. TC2 ![TC1](https://kazurayam.github.io/ForumTopic153991CustomKeywords/images/TC2.png)
+
+Please compare these 2 screenshots and find how the Test Case Editr in Manual view renders them differently.
+
 You know, the Manual mode lets you manipulate a Test Case in a tabular format in GUI. When you finished manipulating it and saved the change, the Editor generates a source code of Groovy language. While generating a groovy source, the Editor have to translate an entry that calls a custom class in the GUI table into a line of Groovy statement. At that instant, the Editor generates a line in the format of
 
 `CustomKeywords."fully.qualified.class.name.methodName"(args...)`
